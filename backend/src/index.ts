@@ -1,8 +1,11 @@
 import { Socket } from "socket.io";
 import http from "http";
-import { UserManager } from "./managers/UserManager.ts";
+import express from "express";
+import { Server } from "socket.io";
+import { UserManager } from "./managers/UserManager";
+
 const app = express();
-const server = http.createServer(http);
+const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
@@ -15,9 +18,10 @@ const userManager = new UserManager();
 io.on("connection", (socket: Socket) => {
   console.log("a user connected");
   userManager.addUser("randomName", socket);
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
-    user.Manager.removeUser(socket.id);
+    userManager.removeUser(socket.id);
   });
 });
 

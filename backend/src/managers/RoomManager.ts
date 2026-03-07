@@ -1,4 +1,4 @@
-import { User } from "./UserManager.ts";
+import { User } from "./UserManager";
 
 let GLOBAL_ROOM_ID = 1;
 
@@ -21,9 +21,7 @@ export class RoomManager {
       user2,
     });
 
-    user1.socket.emit("send-offer", [roomId]);
-
-    user2.socket.emit("send-offer", [roomId]);
+    user1.socket.emit("send-offer", { roomId });
   }
 
   onOffer(roomId: string, sdp: string, senderSocketid: string) {

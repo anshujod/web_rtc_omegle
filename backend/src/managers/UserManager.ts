@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
-import { RoomManager } from "./RoomManager.ts";
+import { RoomManager } from "./RoomManager";
+
 export interface User {
   socket: Socket;
   name: string;
@@ -27,9 +28,8 @@ export class UserManager {
   }
 
   removeUser(socketId: string) {
-    const user = this.users.find((x) => x.socket.id === socketId);
-    this.users = this.users.filter((x) => x.socketId !== socketId);
-    this.queue = this.queue.filter((x) => x === socketId);
+    this.users = this.users.filter((x) => x.socket.id !== socketId);
+    this.queue = this.queue.filter((x) => x !== socketId);
   }
 
   clearQueue() {
@@ -50,7 +50,7 @@ export class UserManager {
     }
     console.log("creating room");
 
-    const room = this.roomManager.createRoom(user1, user2);
+    this.roomManager.createRoom(user1, user2);
     this.clearQueue();
   }
 
@@ -63,8 +63,19 @@ export class UserManager {
       this.roomManager.onAnswer(roomId, sdp, socket.id);
     });
 
-    socket.on("add-ice-candidate", ({ candidate, roomId, type }) => {
-      this.roomManager.onIceCandidates(roomId, socket.id, candi);
-    });
+    socket.on(
+      "add-ice-candidate",
+      ({
+        candidate,
+        roomId,
+        type,
+      }: {
+        candidate: any;
+        roomId: string;
+        type: "sender" | "receiver";
+      }) => {
+        this.roomManager.onIceCandidates(roomId, socket.id, candidate, type);
+      },
+    );
   }
 }

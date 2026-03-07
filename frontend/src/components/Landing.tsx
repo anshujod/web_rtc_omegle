@@ -11,7 +11,7 @@ export const Landing = () => {
     useState<MediaStreamTrack | null>(null);
 
   const getCam = async () => {
-    const stream = await window.navigatior.mediaDevices.getUserMedia({
+    const stream = await window.navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true,
     });
@@ -33,12 +33,12 @@ export const Landing = () => {
     if (videoRef && videoRef.current) {
       getCam();
     }
-  }, [videoRef]);
+  }, []);
 
   if (!joined) {
     return (
       <div>
-        <video autoPlay ref={videoRef}></video>
+        <video autoPlay muted ref={videoRef}></video>
         <input
           type="text"
           onChange={(e) => {
