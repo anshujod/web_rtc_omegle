@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const URL = "http://localhost:3000";
+const URL = import.meta.env.VITE_SIGNALING_URL || "http://localhost:3000";
 
 export const Room = ({
   name = "",
@@ -22,6 +22,11 @@ export const Room = ({
   const remoteStreamRef = useRef<MediaStream>(new MediaStream());
   const localAudioTrackRef = useRef<MediaStreamTrack | null>(localAudioTrack);
   const localVideoTrackRef = useRef<MediaStreamTrack | null>(localVideoTrack);
+  const [chatInput, setChatInput] = useState("");
+  const [chatMessages, setChatMessages] = useState<string[]>([
+    "You are now connected.",
+    "Say hi to your stranger.",
+  ]);
 
   useEffect(() => {
     localAudioTrackRef.current = localAudioTrack;
@@ -153,11 +158,69 @@ export const Room = ({
   }, []);
 
   return (
-    <div>
-      <div>{lobby ? "Looking for someone to connect..." : `Connected as ${name}`}</div>
-      <div style={{ display: "flex", gap: "16px", marginTop: "12px" }}>
-        <video ref={localVideoRef} autoPlay muted playsInline width={320} height={240} />
-        <video ref={remoteVideoRef} autoPlay playsInline width={320} height={240} />
+    <div className="omegle-shell">
+      <header className="omegle-header">
+        <div className="brand">
+          <span className="brand-mark">ome</span>
+          <span className="brand-mark-alt">gle</span>
+        </div>
+        <div className="brand-tagline">Talk to strangers!</div>
+      </header>
+
+      <div className="omegle-main">
+        <div className="video-stack">
+          <div className="video-panel">
+            <div className="panel-label">Stranger</div>
+            <div className="video-card">
+              <video ref={remoteVideoRef} autoPlay playsInline width={320} height={240} />
+            </div>
+          </div>
+          <div className="video-panel">
+            <div className="panel-label">You ({name || "Anonymous"})</div>
+            <div className="video-card">
+              <video ref={localVideoRef} autoPlay muted playsInline width={320} height={240} />
+            </div>
+          </div>
+        </div>
+
+        <aside className="chat-panel">
+          <div className="chat-header">
+            {lobby ? "Looking for someone to connect..." : "Connected"}
+          </div>
+          <div className="chat-list">
+            {chatMessages.map((msg, idx) => (
+              <div key={idx} className="chat-bubble">
+                {msg}
+              </div>
+            ))}
+          </div>
+          <div className="chat-input-row">
+            <input
+              value={chatInput}
+              placeholder="Type a message..."
+              onChange={(e) => {
+                setChatInput(e.target.value);
+              }}
+            />
+            <button
+              onClick={() => {
+                if (!chatInput.trim()) return;
+                setChatMessages((prev) => [...prev, `You: ${chatInput.trim()}`]);
+                setChatInput("");
+              }}
+            >
+              Send
+            </button>
+          </div>
+          <div className="chat-actions">
+            <button>Next Server</button>
+            <button>Next</button>
+          </div>
+        </aside>
+      </div>
+
+      <div className="status-line">
+        {lobby ? "Waiting in lobby..." : "You are chatting now"}
       </div>
     </div>
   );

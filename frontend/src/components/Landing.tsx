@@ -37,21 +37,37 @@ export const Landing = () => {
 
   if (!joined) {
     return (
-      <div>
-        <video autoPlay muted ref={videoRef}></video>
-        <input
-          type="text"
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-        ></input>
-        <button
-          onClick={() => {
-            setJoined(true);
-          }}
-        >
-          Join
-        </button>
+      <div className="omegle-shell">
+        <header className="omegle-header">
+          <div className="brand">
+            <span className="brand-mark">ome</span>
+            <span className="brand-mark-alt">gle</span>
+          </div>
+          <div className="brand-tagline">Talk to strangers!</div>
+        </header>
+
+        <div className="landing-card">
+          <div className="title">Preview and Join</div>
+          <div className="video-card">
+            <video autoPlay muted ref={videoRef}></video>
+          </div>
+          <div className="controls">
+            <input
+              type="text"
+              placeholder="Enter your name"
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+            ></input>
+            <button
+              onClick={() => {
+                setJoined(true);
+              }}
+            >
+              Start
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
